@@ -66,7 +66,7 @@ class PlayHarder extends PluginBase implements Listener {
 		$this->listenerLoader = new ListenerLoader ( $this );
 		$this->eventListener = new EventListener ( $this );
 		
-		Entity::registerEntity ( "\\PlayHarder\\ExperienceOrb", true );
+		Entity::registerEntity ( "PlayHarder\\ExperienceOrb", true );
 		$this->getServer ()->getPluginManager ()->registerEvents ( $this, $this );
 		
 		$this->getServer ()->getScheduler ()->scheduleRepeatingTask ( new AutoSaveTask ( $this ), 12000 );

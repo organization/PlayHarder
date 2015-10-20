@@ -11,7 +11,7 @@ class AutoUnloadTask extends Task {
 		$this->owner = $owner;
 	}
 	public function onRun($currentTick) {
-		$this->owner->unloadRank ();
+		$this->owner->unloadAttribute();
 	}
 }
 ?>

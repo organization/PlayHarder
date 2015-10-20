@@ -2,13 +2,10 @@
 
 namespace PlayHarder\system;
 
-use PlayHarder\attribute\AttributeProvider;
 use pocketmine\item\Item;
 use pocketmine\Player;
-use pocketmine\entity\Attribute;
 
 class HungerSystem {
-	private $attributeProvider;
 	const WALKING_AND_SNEAKING = 0.01;
 	const SWIMMING = 0.015;
 	const BREAKING_A_BLOCK = 0.025;
@@ -17,16 +14,12 @@ class HungerSystem {
 	const ATTACKING_AN_ENEMY = 0.3;
 	const RECEIVING_ANY_DAMAGE = 0.3;
 	const JUMPING_WHILE_SPRINTING = 0.8;
-	public function __construct() {
-		$this->attributeProvider = AttributeProvider::getInstance ();
-		$hunger = Attribute::addAttribute ( 3, "player.hunger", 0, 20, 20 );
-	}
-	public function exhaustion(Player $player, int $point) {
+	public static function exhaustion(Player $player, int $point) {
 		$attribute = $this->attributeProvider->getAttribute ( $player );
 		$attribute->setHunger ( $attribute->getHunger () - $point );
 		$attribute->updateAttribute ();
 	}
-	public function saturation(Player $player, int $itemId) {
+	public static function saturation(Player $player, int $itemId) {
 		switch ($itemId) {
 			case Item::APPLE :
 				$point = 4;

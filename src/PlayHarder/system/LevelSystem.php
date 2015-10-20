@@ -13,22 +13,21 @@ class LevelSystem {
 		$attribute = AttributeProvider::getInstance()->getAttribute ( $player );
 		
 		$exp = $attribute->getExp () + $exp;
+		$current = $attribute->getExpCurrent () + $exp;
 		$last = $attribute->getExpLast ();
-		$current = $attribute->getExpCurrent ();
 		$level = $attribute->getExpLevel ();
 		$percent = $attribute->getExpBarPercent ();
 		
 		for(;;) {
-			if ($last > $exp) {
-				$current = $last - $exp;
+			if ($last > $current) {
 				$percent = sprintf ( "%.1f", $current / $last );
 				break;
 			} else {
 				$level ++;
+				$current = 0;
 				$last += 2;
 			}
 		}
-		
 		$attribute->setExp ( $exp );
 		$attribute->setExpLast ( $last );
 		$attribute->setExpCurrent ( $current );
@@ -51,15 +50,16 @@ class LevelSystem {
 		
 		$level = 1;
 		$last = 7;
+		$current = $exp;
 		
 		for(;;) {
-			if ($last > $exp) {
-				$current = $last - $exp;
+			if ($last > $current) {
 				$percent = sprintf ( "%.1f", $current / $last );
 				break;
 			} else {
 				$level ++;
 				$last += 2;
+				$current = 0;
 			}
 		}
 		

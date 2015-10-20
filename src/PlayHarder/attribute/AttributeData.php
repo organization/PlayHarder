@@ -29,7 +29,7 @@ class AttributeData {
 		$this->data = (new Config ( $this->dataFolder . $this->userName . ".json", Config::JSON, [ 
 				"hunger" => 20,
 				"exp" => 0,
-				"expLevel" => 0,
+				"expLevel" => 1,
 				"expCurrent" => 0,
 				"expLast" => 7,
 				"expBarPercent" => 0 ] ))->getAll ();
@@ -37,7 +37,9 @@ class AttributeData {
 		$this->server = Server::getInstance ();
 	}
 	public function save($async = false) {
-		(new Config ( $this->dataFolder . $this->userName . ".json", Config::JSON, $this->data ))->save ( $async );
+		$data = new Config ( $this->dataFolder . $this->userName . ".json", Config::JSON );
+		$data->setAll ( $this->data );
+		$data->save ( $async );
 	}
 	public function getHunger() {
 		return $this->data ["hunger"];
@@ -52,7 +54,7 @@ class AttributeData {
 		return $this->data ["expCurrent"];
 	}
 	public function getExpLast() {
-		return $This->data ["expLast"];
+		return $this->data ["expLast"];
 	}
 	public function getExpBarPercent() {
 		return $this->data ["expBarPercent"];
@@ -115,13 +117,15 @@ class AttributeData {
 	public function addExp($exp) {
 		if ($exp == 0)
 			return;
-		if ($player = $this->server->getPlayer ( $this->userName ) instanceof Player)
+		$player = $this->server->getPlayer ( $this->userName );
+		if ($player instanceof Player)
 			LevelSystem::addExp ( $player, $exp );
 	}
 	public function subtractExp($exp) {
 		if ($exp == 0)
 			return;
-		if ($player = $this->server->getPlayer ( $this->userName ) instanceof Player)
+		$player = $this->server->getPlayer ( $this->userName );
+		if ($player instanceof Player)
 			LevelSystem::subtractExp ( $player, $exp );
 	}
 }

@@ -15,16 +15,28 @@ class ExperienceOrb extends Projectile {
 	public $width = 0.25;
 	public $length = 0.25;
 	public $height = 0.25;
-	protected $gravity = 0.02;//0.03;
+	protected $exp = 0;
+	protected $gravity = 0.024;
 	protected $drag = 0.01;
-	protected $dataProperties = [
-			self::DATA_FLAGS => [self::DATA_TYPE_BYTE, 0],
-			self::DATA_AIR => [self::DATA_TYPE_SHORT, 300],
-			self::DATA_NAMETAG => [self::DATA_TYPE_STRING, ""],
-			self::DATA_SHOW_NAMETAG => [self::DATA_TYPE_BYTE, 0],
-			self::DATA_SILENT => [self::DATA_TYPE_BYTE, 0],
-			self::DATA_NO_AI => [self::DATA_TYPE_BYTE, 1],
-	];
+	protected $dataProperties = [ 
+			self::DATA_FLAGS => [ 
+					self::DATA_TYPE_BYTE,
+					0 ],
+			self::DATA_AIR => [ 
+					self::DATA_TYPE_SHORT,
+					300 ],
+			self::DATA_NAMETAG => [ 
+					self::DATA_TYPE_STRING,
+					"" ],
+			self::DATA_SHOW_NAMETAG => [ 
+					self::DATA_TYPE_BYTE,
+					0 ],
+			self::DATA_SILENT => [ 
+					self::DATA_TYPE_BYTE,
+					0 ],
+			self::DATA_NO_AI => [ 
+					self::DATA_TYPE_BYTE,
+					1 ] ];
 	public function __construct(FullChunk $chunk, CompoundTag $nbt, Entity $shootingEntity = \null) {
 		parent::__construct ( $chunk, $nbt, $shootingEntity );
 	}
@@ -46,7 +58,7 @@ class ExperienceOrb extends Projectile {
 		
 		return $hasUpdate;
 	}
-	public function canCollideWith(Entity $entity){
+	public function canCollideWith(Entity $entity) {
 		return $entity instanceof Living;
 	}
 	public function spawnTo(Player $player) {
@@ -63,5 +75,11 @@ class ExperienceOrb extends Projectile {
 		$player->dataPacket ( $pk );
 		
 		parent::spawnTo ( $player );
+	}
+	public function getExp() {
+		return $this->exp;
+	}
+	public function setExp($exp) {
+		$this->exp = $exp;
 	}
 }

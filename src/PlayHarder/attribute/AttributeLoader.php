@@ -4,7 +4,6 @@ namespace PlayHarder\attribute;
 
 use pocketmine\Player;
 use pocketmine\Server;
-use PlayHarder;
 use PlayHarder\PlayHarder;
 use PlayHarder\task\AutoUnloadTask;
 
@@ -52,6 +51,7 @@ class AttributeLoader {
 		return $this->users [$userName] = new AttributeData ( $userName, $this->plugin->getDataFolder () . "player/" );
 	}
 	public function unloadAttribute($userName = null) {
+		echo "unloadAttribute(yes async)\n";
 		if ($userName === null) {
 			foreach ( $this->users as $userName => $attributeData ) {
 				if ($this->users [$userName] instanceof AttributeData)
@@ -71,7 +71,8 @@ class AttributeLoader {
 		return true;
 	}
 	/**
-	 * @param Player $player
+	 *
+	 * @param Player $player        	
 	 * @return AttributeData
 	 */
 	public function getAttribute(Player $player) {
@@ -88,8 +89,10 @@ class AttributeLoader {
 	}
 	public function save($async = false) {
 		foreach ( $this->users as $userName => $attributeData )
-			if ($attributeData instanceof AttributeData)
+			if ($attributeData instanceof AttributeData) {
+				echo "save " . $userName . "non async \n";
 				$attributeData->save ( $async );
+			}
 	}
 	public static function getInstance() {
 		return static::$instance;

@@ -5,7 +5,7 @@ namespace PlayHarder\attribute;
 use pocketmine\utils\Config;
 use pocketmine\Server;
 use pocketmine\Player;
-use PlayHarder;
+use PlayHarder\PlayHarder;
 
 class AttributeProvider {
 	/**
