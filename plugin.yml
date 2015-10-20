@@ -1,0 +1,7 @@
+name: PlayHarder
+main: PlayHarder\PlayHarder
+version: 1.0-TEST
+author: hm
+api:
+- 1.13.0
+- 2.0.0
