@@ -5,6 +5,7 @@ namespace PlayHarder\system;
 use PlayHarder\attribute\AttributeProvider;
 use pocketmine\item\Item;
 use pocketmine\Player;
+use pocketmine\entity\Attribute;
 
 class HungerSystem {
 	private $attributeProvider;
@@ -18,10 +19,12 @@ class HungerSystem {
 	const JUMPING_WHILE_SPRINTING = 0.8;
 	public function __construct() {
 		$this->attributeProvider = AttributeProvider::getInstance ();
+		$hunger = Attribute::addAttribute ( 3, "player.hunger", 0, 20, 20 );
 	}
 	public function exhaustion(Player $player, int $point) {
 		$attribute = $this->attributeProvider->getAttribute ( $player );
 		$attribute->setHunger ( $attribute->getHunger () - $point );
+		$attribute->updateAttribute ();
 	}
 	public function saturation(Player $player, int $itemId) {
 		switch ($itemId) {
@@ -88,11 +91,12 @@ class HungerSystem {
 			default :
 				$point = 0;
 				break;
-			// DATA http://minecraft.gamepedia.com/Hunger
+			// Reference http://minecraft.gamepedia.com/Hunger
 		}
 		
 		$attribute = $this->attributeProvider->getAttribute ( $player );
 		$attribute->setHunger ( $attribute->getHunger () + $point );
+		$attribute->updateAttribute ();
 	}
 }
 

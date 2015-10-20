@@ -4,6 +4,10 @@ namespace PlayHarder\attribute;
 
 use pocketmine\utils\Config;
 use pocketmine\Server;
+use pocketmine\network\protocol\UpdateAttributesPacket;
+use pocketmine\entity\Attribute;
+use pocketmine\Player;
+use PlayHarder\system\LevelSystem;
 
 class AttributeData {
 	private $userName;
@@ -53,43 +57,72 @@ class AttributeData {
 	public function getExpBarPercent() {
 		return $this->data ["expBarPercent"];
 	}
-	public function setHunger(float $hunger) {
+	public function setHunger($hunger) {
 		if ($hunger < 0)
 			$hunger = 0;
 		if ($hunger > 20)
 			$hunger = 20;
 		$this->data ["hunger"] = $hunger;
 	}
-	public function setExp(int $exp) {
+	public function setExp($exp) {
 		if ($exp < 0)
 			$exp = 0;
 		$this->data ["exp"] = $exp;
 	}
-	public function setExpLevel(int $level) {
+	public function setExpLevel($level) {
 		if ($level < 0)
 			$level = 0;
 		if ($level > 24791)
 			$level = 24791;
 		$this->data ["expLevel"] = $level;
 	}
-	public function setExpCurrent(float $current) {
+	public function setExpCurrent($current) {
 		$this->data ["expCurrent"] = $current;
 	}
 	public function setExpLast($last) {
 		$this->data ["explast"] = $last;
 	}
-	public function setExpBarPercent(float $percent) {
+	public function setExpBarPercent($percent) {
 		if ($percent < 0)
 			$percent = 0;
 		if ($percent > 1)
 			$percent = 1;
 		$this->data ["expBarPercent"] = $percent;
 	}
-	public function updateAttribute(){
-		$player = $this->server->getPlayer($this->userName);
-		if($player instanceof Player){
-			//
+	public function updateAttribute() {
+		$player = $this->server->getPlayer ( $this->userName );
+		if ($player instanceof Player and $player->isConnected ()) {
+			$pk = new UpdateAttributesPacket ();
+			$pk->entityId = 0;
+			
+			$experience = Attribute::getAttributeByName ( "player.experience" );
+			$experience->setValue ( $this->getExpBarPercent () );
+			
+			$experience_level = Attribute::getAttributeByName ( "player.level" );
+			$experience_level->setValue ( $this->getExpLevel () );
+			
+			$hunger = Attribute::getAttributeByName ( "player.hunger" );
+			$hunger->setValue ( $this->getHunger () );
+			
+			$pk->entries = [ 
+					$experience,
+					$experience_level,
+					$hunger ];
+			
+			$player->dataPacket ( $pk );
 		}
+	}
+	public function addExp($exp) {
+		if ($exp == 0)
+			return;
+		if ($player = $this->server->getPlayer ( $this->userName ) instanceof Player)
+			LevelSystem::addExp ( $player, $exp );
+	}
+	public function subtractExp($exp) {
+		if ($exp == 0)
+			return;
+		if ($player = $this->server->getPlayer ( $this->userName ) instanceof Player)
+			LevelSystem::subtractExp ( $player, $exp );
 	}
 }
 

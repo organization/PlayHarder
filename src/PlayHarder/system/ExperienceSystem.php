@@ -19,37 +19,33 @@ class ExperienceSystem {
 	public function __construct() {
 		$this->attributeProvider = AttributeProvider::getInstance ();
 	}
-	public function getExpOrb(int $eid) {
+	public function getExpOrb($eid) {
 		return isset ( $this->expOrbs [$eid] ) ? $this->expOrbs [$eid] : 0;
 	}
-	public function useExpOrb(Player $player, int $eid) {
+	public function useExpOrb(Player $player, $eid) {
 		$attribute = $this->attributeProvider->getAttribute ( $player );
-		$attribute->setExp ( $attribute->getExp () + $this->getExpOrb ( $eid ) );
+		$attribute->addExp ( $player, $this->getExpOrb ( $eid ) );
 		
 		if (isset ( $this->expOrbs [$eid] ))
 			unset ( $this->expOrbs [$eid] );
 	}
-	public function dropExpOrb(Position $source, int $exp = 1, Vector3 $motion = \null, int $delay = 40) {
+	public function dropExpOrb(Position $source, $exp = 1, Vector3 $motion = \null, $delay = 40) {
 		$motion = $motion === \null ? new Vector3 ( \lcg_value () * 0.2 - 0.1, 0.2, \lcg_value () * 0.2 - 0.1 ) : $motion;
 		$entity = Entity::createEntity ( "ExperienceOrb", $source->getLevel ()->getChunk ( $source->getX () >> 4, $source->getZ () >> 4, \true ), new CompoundTag ( "", [ 
 				"Pos" => new ListTag ( "Pos", [ 
 						new DoubleTag ( "", $source->getX () ),
 						new DoubleTag ( "", $source->getY () + 2 ),
-						new DoubleTag ( "", $source->getZ () ) 
-				] ),
+						new DoubleTag ( "", $source->getZ () ) ] ),
 				
 				"Motion" => new ListTag ( "Motion", [ 
 						new DoubleTag ( "", $motion->x ),
 						new DoubleTag ( "", $motion->y ),
-						new DoubleTag ( "", $motion->z ) 
-				] ),
+						new DoubleTag ( "", $motion->z ) ] ),
 				"Rotation" => new ListTag ( "Rotation", [ 
 						new FloatTag ( "", \lcg_value () * 360 ),
-						new FloatTag ( "", 0 ) 
-				] ),
+						new FloatTag ( "", 0 ) ] ),
 				"Health" => new ShortTag ( "Health", 20 ),
-				"PickupDelay" => new ShortTag ( "PickupDelay", $delay ) 
-		] ) );
+				"PickupDelay" => new ShortTag ( "PickupDelay", $delay ) ] ) );
 		$this->expOrbs [$entity->getId ()] = $exp;
 		$entity->spawnToAll ();
 	}

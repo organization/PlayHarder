@@ -6,12 +6,11 @@ use PlayHarder\attribute\AttributeProvider;
 use pocketmine\Player;
 
 class LevelSystem {
-	private $attributeProvider;
-	public function __construct() {
-		$this->attributeProvider = AttributeProvider::getInstance ();
-	}
-	public function addExp(Player $player, $exp) {
-		$attribute = $this->attributeProvider->getAttribute ( $player );
+	public static function addExp(Player $player, $exp) {
+		if ($exp == 0)
+			return;
+		
+		$attribute = AttributeProvider::getInstance()->getAttribute ( $player );
 		
 		$exp = $attribute->getExp () + $exp;
 		$last = $attribute->getExpLast ();
@@ -37,12 +36,15 @@ class LevelSystem {
 		$attribute->setExpBarPercent ( $percent );
 		$attribute->updateAttribute ();
 	}
-	public function subtractExp(Player $player, $exp) {
-		$attribute = $this->attributeProvider->getAttribute ( $player );
+	public static function subtractExp(Player $player, $exp) {
+		if ($exp == 0)
+			return;
+		
+		$attribute = AttributeProvider::getInstance()->getAttribute ( $player );
 		$this->setExp ( $player, $attribute->getExp () - $exp );
 	}
-	public function setExp(Player $player, $exp) {
-		$attribute = $this->attributeProvider->getAttribute ( $player );
+	public static function setExp(Player $player, $exp) {
+		$attribute = AttributeProvider::getInstance()->getAttribute ( $player );
 		
 		if ($attribute->getExp () == $exp)
 			return;
