@@ -8,13 +8,12 @@ use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\Projectile;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Living;
 
 class ExperienceOrb extends Projectile {
 	const NETWORK_ID = 69;
-	public $width = 0.25;
-	public $length = 0.25;
-	public $height = 0.25;
+	public $width = 0.025;
+	public $length = 0.025;
+	public $height = 0.025;
 	protected $exp = 0;
 	protected $gravity = 0.024;
 	protected $drag = 0.01;
@@ -58,8 +57,8 @@ class ExperienceOrb extends Projectile {
 		
 		return $hasUpdate;
 	}
-	public function canCollideWith(Entity $entity) {
-		return $entity instanceof Living;
+	public function canCollideWith(Entity $entity){
+		return ($entity instanceof Player) ? true : false ;
 	}
 	public function spawnTo(Player $player) {
 		$pk = new AddEntityPacket ();

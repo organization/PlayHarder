@@ -51,7 +51,6 @@ class AttributeLoader {
 		return $this->users [$userName] = new AttributeData ( $userName, $this->plugin->getDataFolder () . "player/" );
 	}
 	public function unloadAttribute($userName = null) {
-		echo "unloadAttribute(yes async)\n";
 		if ($userName === null) {
 			foreach ( $this->users as $userName => $attributeData ) {
 				if ($this->users [$userName] instanceof AttributeData)
@@ -89,10 +88,8 @@ class AttributeLoader {
 	}
 	public function save($async = false) {
 		foreach ( $this->users as $userName => $attributeData )
-			if ($attributeData instanceof AttributeData) {
-				echo "save " . $userName . "non async \n";
+			if ($attributeData instanceof AttributeData)
 				$attributeData->save ( $async );
-			}
 	}
 	public static function getInstance() {
 		return static::$instance;

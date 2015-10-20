@@ -18,6 +18,12 @@ use pocketmine\event\block\BlockBreakEvent;
 use PlayHarder\system\ExperienceSystem;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\entity\Attribute;
+use pocketmine\event\player\PlayerDeathEvent;
+use PlayHarder\system\LevelSystem;
+use pocketmine\event\entity\EntityDeathEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\player\PlayerRespawnEvent;
 
 class EventListener implements Listener {
 	/**
@@ -87,9 +93,28 @@ class EventListener implements Listener {
 		$attribute = $this->attributeprovider->getAttribute ( $event->getPlayer () );
 		$attribute->updateAttribute ();
 	}
+	public function onPlayerDeathEvent(PlayerDeathEvent $event) {
+		LevelSystem::setExp ( $event->getEntity (), 0 );
+	}
+	public function on(PlayerRespawnEvent $event) {
+		$attribute = $this->attributeprovider->getAttribute ( $event->getPlayer () );
+		$attribute->updateAttribute ();
+	}
 	public function onBlockBreakEvent(BlockBreakEvent $event) {
-		if (mt_rand ( 1, 3 ) == 1)
+		if (mt_rand ( 1, 5 ) == 1)
 			ExperienceSystem::dropExpOrb ( $event->getBlock (), $event->getBlock ()->getHardness () * 0.2 );
+	}
+	public function onEntityDeathEvent(EntityDeathEvent $event) {
+		if ($event->getEntity ()->getLastDamageCause () instanceof EntityDamageByEntityEvent) {
+			$exp = $event->getEntity ()->getMaxHealth () / 4;
+			$exp += mt_rand ( 1, 3 );
+			ExperienceSystem::dropExpOrb ( $event->getEntity (), $exp );
+		}
+	}
+	public function onEntity(EntityDamageEvent $event) {
+		if ($event instanceof EntityDamageByEntityEvent)
+			if ($event->getDamager () instanceof ExperienceOrb)
+				$event->setCancelled ();
 	}
 	public function onEntityRegainHealthEvent(EntityRegainHealthEvent $event) {
 		if ($event->getRegainReason () != EntityRegainHealthEvent::CAUSE_EATING)
