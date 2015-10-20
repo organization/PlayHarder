@@ -12,6 +12,7 @@ use pocketmine\Server;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\network\protocol\TakeItemEntityPacket;
 use PlayHarder\ExperienceOrb;
+use pocketmine\entity\Attribute;
 
 class EventListener implements Listener {
 	/**
