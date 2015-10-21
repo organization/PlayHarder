@@ -6,14 +6,14 @@ use PlayHarder\attribute\AttributeProvider;
 use pocketmine\Player;
 
 class LevelSystem {
-	public static function addExp(Player $player, $exp) {
-		if ($exp == 0)
+	public static function addExp(Player $player, $add) {
+		if ($add == 0)
 			return;
 		
-		$attribute = AttributeProvider::getInstance()->getAttribute ( $player );
+		$attribute = AttributeProvider::getInstance ()->getAttribute ( $player );
 		
-		$exp = $attribute->getExp () + $exp;
-		$current = $attribute->getExpCurrent () + $exp;
+		$exp = $attribute->getExp () + $add;
+		$current = $attribute->getExpCurrent () + $add;
 		$last = $attribute->getExpLast ();
 		$level = $attribute->getExpLevel ();
 		$percent = $attribute->getExpBarPercent ();
@@ -23,9 +23,15 @@ class LevelSystem {
 				$percent = sprintf ( "%.1f", $current / $last );
 				break;
 			} else {
-				$level ++;
-				$current = 0;
-				$last += 2;
+				if ($level == 0) {
+					$level = 1;
+					$last = 7;
+				} else {
+					$level ++;
+					$last += 2;
+				}
+				$current -= $last;
+				$attribute->addMaxHealth ();
 			}
 		}
 		$attribute->setExp ( $exp );
@@ -39,17 +45,17 @@ class LevelSystem {
 		if ($exp == 0)
 			return;
 		
-		$attribute = AttributeProvider::getInstance()->getAttribute ( $player );
+		$attribute = AttributeProvider::getInstance ()->getAttribute ( $player );
 		$this->setExp ( $player, $attribute->getExp () - $exp );
 	}
 	public static function setExp(Player $player, $exp) {
-		$attribute = AttributeProvider::getInstance()->getAttribute ( $player );
+		$attribute = AttributeProvider::getInstance ()->getAttribute ( $player );
 		
 		if ($attribute->getExp () == $exp)
 			return;
 		
-		$level = 1;
-		$last = 7;
+		$level = 0;
+		$last = 0;
 		$current = $exp;
 		
 		for(;;) {
@@ -57,9 +63,15 @@ class LevelSystem {
 				$percent = sprintf ( "%.1f", $current / $last );
 				break;
 			} else {
-				$level ++;
-				$last += 2;
-				$current = 0;
+				if ($level == 0) {
+					$level = 1;
+					$current -= $last;
+					$last = 7;
+				} else {
+					$level ++;
+					$current -= $last;
+					$last += 2;
+				}
 			}
 		}
 		

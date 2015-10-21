@@ -8,6 +8,7 @@ use pocketmine\network\protocol\UpdateAttributesPacket;
 use pocketmine\entity\Attribute;
 use pocketmine\Player;
 use PlayHarder\system\LevelSystem;
+use pocketmine\entity\Effect;
 
 class AttributeData {
 	private $userName;
@@ -29,10 +30,12 @@ class AttributeData {
 		$this->data = (new Config ( $this->dataFolder . $this->userName . ".json", Config::JSON, [ 
 				"hunger" => 20,
 				"exp" => 0,
-				"expLevel" => 1,
+				"expLevel" => 0,
 				"expCurrent" => 0,
-				"expLast" => 7,
-				"expBarPercent" => 0 ] ))->getAll ();
+				"expLast" => 0,
+				"expBarPercent" => 0,
+				"maxHealth" => 20 
+		] ))->getAll ();
 		
 		$this->server = Server::getInstance ();
 	}
@@ -59,6 +62,9 @@ class AttributeData {
 	public function getExpBarPercent() {
 		return $this->data ["expBarPercent"];
 	}
+	public function getMaxHealth() {
+		return $this->data ["maxHealth"];
+	}
 	public function setHunger($hunger) {
 		if ($hunger < 0)
 			$hunger = 0;
@@ -82,7 +88,7 @@ class AttributeData {
 		$this->data ["expCurrent"] = $current;
 	}
 	public function setExpLast($last) {
-		$this->data ["explast"] = $last;
+		$this->data ["expLast"] = $last;
 	}
 	public function setExpBarPercent($percent) {
 		if ($percent < 0)
@@ -90,6 +96,15 @@ class AttributeData {
 		if ($percent > 1)
 			$percent = 1;
 		$this->data ["expBarPercent"] = $percent;
+	}
+	public function setMaxHealth($health) {
+		$this->data ["maxHealth"] = $health;
+		if ($this->data ["maxHealth"] > 40)
+			$this->data ["maxHealth"] = 40;
+		
+		$player = $this->server->getPlayer ( $this->userName );
+		if ($player instanceof Player)
+			$player->setMaxHealth ( $this->data ["maxHealth"] );
 	}
 	public function updateAttribute() {
 		$player = $this->server->getPlayer ( $this->userName );
@@ -109,10 +124,29 @@ class AttributeData {
 			$pk->entries = [ 
 					$experience,
 					$experience_level,
-					$hunger ];
+					$hunger 
+			];
+			
+			if ($this->getExpLevel () != 0) {
+				$player->addEffect ( Effect::getEffect ( Effect::DAMAGE_RESISTANCE )->setDuration ( 500 )->setAmplifier ( $this->getExpLevel () ) );
+				$player->addEffect ( Effect::getEffect ( Effect::REGENERATION )->setDuration ( 500 )->setAmplifier ( $this->getExpLevel () ) );
+				$player->addEffect ( Effect::getEffect ( Effect::SPEED )->setDuration ( 500 )->setAmplifier ( $this->getExpLevel () ) );
+				$player->addEffect ( Effect::getEffect ( Effect::JUMP )->setDuration ( 500 )->setAmplifier ( $this->getExpLevel () ) );
+				$player->addEffect ( Effect::getEffect ( Effect::HEALTH_BOOST )->setDuration ( 500 )->setAmplifier ( $this->getExpLevel () ) );
+				$player->addEffect ( Effect::getEffect ( Effect::FIRE_RESISTANCE )->setDuration ( 500 )->setAmplifier ( $this->getExpLevel () ) );
+			}
 			
 			$player->dataPacket ( $pk );
 		}
+	}
+	public function addMaxHealth($add = 1) {
+		$this->data ["maxHealth"] += $add;
+		if ($this->data ["maxHealth"] > 40)
+			$this->data ["maxHealth"] = 40;
+		
+		$player = $this->server->getPlayer ( $this->userName );
+		if ($player instanceof Player)
+			$player->setMaxHealth ( $this->data ["maxHealth"] );
 	}
 	public function addExp($exp) {
 		if ($exp == 0)
