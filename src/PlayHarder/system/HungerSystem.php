@@ -7,20 +7,20 @@ use pocketmine\Player;
 use PlayHarder\attribute\AttributeProvider;
 
 class HungerSystem {
-	const WALKING_AND_SNEAKING = 0.01;
+	const WALKING_AND_SNEAKING = 0.005;
 	const SWIMMING = 0.015;
 	const BREAKING_A_BLOCK = 0.025;
 	const SPRINTING = 0.1;
-	const JUMPING = 0.2;
+	const JUMPING = 0.1;
 	const ATTACKING_AN_ENEMY = 0.3;
 	const RECEIVING_ANY_DAMAGE = 0.3;
-	const JUMPING_WHILE_SPRINTING = 0.8;
-	public static function exhaustion(Player $player, int $point) {
+	const JUMPING_WHILE_SPRINTING = 0.4;
+	public static function exhaustion(Player $player, $point) {
 		$attribute = AttributeProvider::getInstance ()->getAttribute ( $player );
 		$attribute->setHunger ( $attribute->getHunger () - $point );
 		$attribute->updateAttribute ();
 	}
-	public static function saturation(Player $player, int $itemId) {
+	public static function saturation(Player $player, $itemId) {
 		switch ($itemId) {
 			case Item::APPLE :
 				$point = 4;

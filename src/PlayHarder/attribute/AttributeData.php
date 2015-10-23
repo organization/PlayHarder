@@ -82,6 +82,8 @@ class AttributeData {
 			$level = 0;
 		if ($level > 24791)
 			$level = 24791;
+		if ($this->data ["expLevel"] > $level)
+			$this->giveEffect ();
 		$this->data ["expLevel"] = $level;
 	}
 	public function setExpCurrent($current) {
@@ -127,16 +129,20 @@ class AttributeData {
 					$hunger 
 			];
 			
-			if ($this->getExpLevel () != 0) {
-				$player->addEffect ( Effect::getEffect ( Effect::DAMAGE_RESISTANCE )->setDuration ( 500 )->setAmplifier ( $this->getExpLevel () ) );
-				$player->addEffect ( Effect::getEffect ( Effect::REGENERATION )->setDuration ( 500 )->setAmplifier ( $this->getExpLevel () ) );
-				$player->addEffect ( Effect::getEffect ( Effect::SPEED )->setDuration ( 500 )->setAmplifier ( $this->getExpLevel () ) );
-				$player->addEffect ( Effect::getEffect ( Effect::JUMP )->setDuration ( 500 )->setAmplifier ( $this->getExpLevel () ) );
-				$player->addEffect ( Effect::getEffect ( Effect::HEALTH_BOOST )->setDuration ( 500 )->setAmplifier ( $this->getExpLevel () ) );
-				$player->addEffect ( Effect::getEffect ( Effect::FIRE_RESISTANCE )->setDuration ( 500 )->setAmplifier ( $this->getExpLevel () ) );
-			}
-			
 			$player->dataPacket ( $pk );
+		}
+	}
+	public function giveEffect() {
+		$player = $this->server->getPlayer ( $this->userName );
+		if ($player instanceof Player and $player->isConnected ()) {
+			if ($this->getExpLevel () != 0) {
+				$player->addEffect ( Effect::getEffect ( Effect::DAMAGE_RESISTANCE )->setDuration ( 340 )->setAmplifier ( $this->getExpLevel () ) );
+				$player->addEffect ( Effect::getEffect ( Effect::REGENERATION )->setDuration ( 340 )->setAmplifier ( $this->getExpLevel () ) );
+				$player->addEffect ( Effect::getEffect ( Effect::SPEED )->setDuration ( 340 )->setAmplifier ( $this->getExpLevel () ) );
+				$player->addEffect ( Effect::getEffect ( Effect::JUMP )->setDuration ( 340 )->setAmplifier ( $this->getExpLevel () ) );
+				$player->addEffect ( Effect::getEffect ( Effect::HEALTH_BOOST )->setDuration ( 340 )->setAmplifier ( $this->getExpLevel () ) );
+				$player->addEffect ( Effect::getEffect ( Effect::FIRE_RESISTANCE )->setDuration ( 340 )->setAmplifier ( $this->getExpLevel () ) );
+			}
 		}
 	}
 	public function addMaxHealth($add = 1) {

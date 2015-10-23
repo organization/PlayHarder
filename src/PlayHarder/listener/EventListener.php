@@ -30,6 +30,10 @@ use PlayHarder\system\HungerSystem;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\network\protocol\PlayerActionPacket;
 use PlayHarder\task\HungerTask;
+use pocketmine\network\protocol\EntityEventPacket;
+use pocketmine\item\Item;
+use pocketmine\event\player\PlayerItemConsumeEvent;
+use pocketmine\entity\Effect;
 
 class EventListener implements Listener {
 	/**
@@ -52,7 +56,7 @@ class EventListener implements Listener {
 		$this->server = Server::getInstance ();
 		$this->attributeprovider = AttributeProvider::getInstance ();
 		
-		Attribute::addAttribute ( 3, "player.hunger", 0, 20, 20 );
+		Attribute::addAttribute ( 3, "player.hunger", 0, 20, 20, true );
 		
 		$this->getServer ()->getScheduler ()->scheduleRepeatingTask ( new HungerTask ( $this ), 80 );
 		$this->getServer ()->getPluginManager ()->registerEvents ( $this, $plugin );
@@ -109,6 +113,8 @@ class EventListener implements Listener {
 	}
 	public function onPlayerDeathEvent(PlayerDeathEvent $event) {
 		LevelSystem::setExp ( $event->getEntity (), 0 );
+		$attribute = $this->attributeprovider->getAttribute ( $event->getPlayer () );
+		$attribute->setHunger ( 20 );
 	}
 	public function onPlayerRespawnEvent(PlayerRespawnEvent $event) {
 		$attribute = $this->attributeprovider->getAttribute ( $event->getPlayer () );
@@ -155,27 +161,102 @@ class EventListener implements Listener {
 	public function onEntityRegainHealthEvent(EntityRegainHealthEvent $event) {
 		if ($event->getRegainReason () != EntityRegainHealthEvent::CAUSE_EATING)
 			return;
-		
 		$player = $event->getEntity ();
 		
 		if ($player instanceof Player)
 			HungerSystem::saturation ( $player, $player->getInventory ()->getItemInHand ()->getId () );
 	}
 	public function onDataPacketReceiveEvent(DataPacketReceiveEvent $event) {
-		$pk = $event->getPacket ();
+		$packet = $event->getPacket ();
+		$player = $event->getPlayer ();
 		
-		if ($pk instanceof PlayerActionPacket) {
-			if ($pk->action == PlayerActionPacket::ACTION_JUMP) {
-				if ($event->getPlayer ()->isSprinting ()) {
-					HungerSystem::exhaustion ( $event->getPlayer (), HungerSystem::JUMPING_WHILE_SPRINTING );
-				} else if ($event->getPlayer ()->isSprinting ()) {
-					HungerSystem::exhaustion ( $event->getPlayer (), HungerSystem::JUMPING );
+		if ($packet instanceof EntityEventPacket) {
+			if ($player->spawned === \true or $player->blocked === \false or $player->isAlive ()) {
+				
+				$player->craftingType = 0;
+				
+				$player->setDataFlag ( Player::DATA_FLAGS, Player::DATA_FLAG_ACTION, \false ); // TODO: check if this should be true
+				
+				switch ($packet->event) {
+					case 9 : // Eating
+						$items = [  // TODO: move this to item classes
+								Item::APPLE => 4,
+								Item::MUSHROOM_STEW => 10,
+								Item::BEETROOT_SOUP => 10,
+								Item::BREAD => 5,
+								Item::RAW_PORKCHOP => 3,
+								Item::COOKED_PORKCHOP => 8,
+								Item::RAW_BEEF => 3,
+								Item::STEAK => 8,
+								Item::COOKED_CHICKEN => 6,
+								Item::RAW_CHICKEN => 2,
+								Item::MELON_SLICE => 2,
+								Item::GOLDEN_APPLE => 10,
+								Item::PUMPKIN_PIE => 8,
+								Item::CARROT => 4,
+								Item::POTATO => 1,
+								Item::BAKED_POTATO => 6,
+								Item::COOKIE => 2,
+								Item::COOKED_FISH => [ 
+										0 => 5,
+										1 => 6 
+								],
+								Item::RAW_FISH => [ 
+										0 => 2,
+										1 => 2,
+										2 => 1,
+										3 => 1 
+								] 
+						];
+						$slot = $player->getInventory ()->getItemInHand ();
+						if (isset ( $items [$slot->getId ()] )) {
+							$this->getServer ()->getPluginManager ()->callEvent ( $ev = new PlayerItemConsumeEvent ( $player, $slot ) );
+							if ($ev->isCancelled ()) {
+								$player->getInventory ()->sendContents ( $this );
+								break;
+							}
+							
+							$pk = new EntityEventPacket ();
+							$pk->eid = $player->getId ();
+							$pk->event = EntityEventPacket::USE_ITEM;
+							$player->dataPacket ( $pk );
+							Server::broadcastPacket ( $player->getViewers (), $pk );
+							
+							$amount = $items [$slot->getId ()];
+							if (\is_array ( $amount )) {
+								$amount = isset ( $amount [$slot->getDamage ()] ) ? $amount [$slot->getDamage ()] : 0;
+							}
+							$ev = new EntityRegainHealthEvent ( $player, $amount, EntityRegainHealthEvent::CAUSE_EATING );
+							$this->getServer ()->getPluginManager ()->callEvent ( $ev );
+							if ($ev->isCancelled ()) {
+								return;
+							}
+							-- $slot->count;
+							$player->getInventory ()->setItemInHand ( $slot, $player );
+							if ($slot->getId () === Item::MUSHROOM_STEW or $slot->getId () === Item::BEETROOT_SOUP) {
+								$this->getInventory ()->addItem ( Item::get ( Item::BOWL, 0, 1 ) );
+							} elseif ($slot->getId () === Item::RAW_FISH and $slot->getDamage () === 3) { // Pufferfish
+								$player->addEffect ( Effect::getEffect ( Effect::HUNGER )->setAmplifier ( 2 )->setDuration ( 15 * 20 ) );
+								$player->addEffect ( Effect::getEffect ( Effect::POISON )->setAmplifier ( 3 )->setDuration ( 60 * 20 ) );
+							}
+						}
+						$event->setCancelled ();
+						break;
 				}
 			}
-			if ($pk->action == PlayerActionPacket::ACTION_START_SPRINT) {
-				$attribute = AttributeProvider::getInstance ()->getAttribute ( $event->getPlayer () );
-				if ($attribute->getHunger () < 6)
-					$event->setCancelled ();
+			if ($packet instanceof PlayerActionPacket) {
+				if ($packet->action == PlayerActionPacket::ACTION_JUMP) {
+					if ($event->getPlayer ()->isSprinting ()) {
+						HungerSystem::exhaustion ( $event->getPlayer (), HungerSystem::JUMPING_WHILE_SPRINTING );
+					} else if ($event->getPlayer ()->isSprinting ()) {
+						HungerSystem::exhaustion ( $event->getPlayer (), HungerSystem::JUMPING );
+					}
+				}
+				if ($packet->action == PlayerActionPacket::ACTION_START_SPRINT) {
+					$attribute = AttributeProvider::getInstance ()->getAttribute ( $event->getPlayer () );
+					if ($attribute->getHunger () < 6)
+						$event->setCancelled ();
+				}
 			}
 		}
 	}
