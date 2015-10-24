@@ -113,7 +113,7 @@ class EventListener implements Listener {
 	}
 	public function onPlayerDeathEvent(PlayerDeathEvent $event) {
 		LevelSystem::setExp ( $event->getEntity (), 0 );
-		$attribute = $this->attributeprovider->getAttribute ( $event->getPlayer () );
+		$attribute = $this->attributeprovider->getAttribute ( $event->getEntity () );
 		$attribute->setHunger ( 20 );
 	}
 	public function onPlayerRespawnEvent(PlayerRespawnEvent $event) {
@@ -294,8 +294,8 @@ class EventListener implements Listener {
 			
 			if ($attribute->getHunger () == 0)
 				if (($player->getHealth () - 1) < 1) {
-					$ev = new EntityDamageEvent ( $player, EntityDamageEvent::CAUSE_MAGIC, $damage );
-					$player->attack ( 1, $ev );
+					$ev = new EntityDamageEvent ( $player, EntityDamageEvent::CAUSE_MAGIC, 1 );
+					$player->attack ( $ev->getDamage (), $ev );
 				}
 		}
 	}
