@@ -73,6 +73,9 @@ class EventListener implements Listener {
 	public function onPlayerMoveEvent(PlayerMoveEvent $event) {
 		$player = $event->getPlayer ();
 		
+		if($attribute->getCTick () <= 20) { $attribute->setCTick ( $attribute->getCTick () + 1 ); }
+		if($attribute->getCTick () > 20){ $attribute->setCTick ( 0 ); } 
+		
 		if ($player->isSpectator ())
 			return;
 		
