@@ -99,12 +99,19 @@ class EventListener implements Listener {
 		}
 		
 		if ($player->isSprinting ()) {
-			HungerSystem::exhaustion ( $player, HungerSystem::SPRINTING );
+			if($attribute->getCTick() == 20){
+				HungerSystem::exhaustion ( $player, HungerSystem::SPRINTING );
+			}
+			
 		} else if ($player->isSneaking ()) {
-			HungerSystem::exhaustion ( $player, HungerSystem::WALKING_AND_SNEAKING );
+			if($attribute->getCTick() == 20){
+				HungerSystem::exhaustion ( $player, HungerSystem::WALKING_AND_SNEAKING );
+			}
 		}
 		if ($player->isInsideOfWater ()) {
-			HungerSystem::exhaustion ( $player, HungerSystem::SWIMMING );
+			if($attribute->getCTick() == 20){
+				HungerSystem::exhaustion ( $player, HungerSystem::SWIMMING );
+			}
 		}
 	}
 	public function onPlayerJoinEvent(PlayerJoinEvent $event) {

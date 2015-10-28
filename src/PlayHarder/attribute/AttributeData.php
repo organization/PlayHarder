@@ -34,7 +34,8 @@ class AttributeData {
 				"expCurrent" => 0,
 				"expLast" => 0,
 				"expBarPercent" => 0,
-				"maxHealth" => 20 
+				"maxHealth" => 20,
+				"cTick" => 0
 		] ))->getAll ();
 		
 		$this->server = Server::getInstance ();
@@ -64,6 +65,9 @@ class AttributeData {
 	}
 	public function getMaxHealth() {
 		return $this->data ["maxHealth"];
+	}
+	public function getCTick(){
+		return $this->data ["cTick"];
 	}
 	public function setHunger($hunger) {
 		if ($hunger < 0)
@@ -107,6 +111,9 @@ class AttributeData {
 		$player = $this->server->getPlayer ( $this->userName );
 		if ($player instanceof Player)
 			$player->setMaxHealth ( $this->data ["maxHealth"] );
+	}
+	public function setCTick($cTick){
+		$this->data ["cTick"] = $cTick; 
 	}
 	public function updateAttribute() {
 		$player = $this->server->getPlayer ( $this->userName );
