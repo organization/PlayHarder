@@ -14,9 +14,9 @@ class ExperienceSystem {
 		$apiVersion = \array_map ( "intval", \explode ( ".", Server::getInstance ()->getApiVersion () ) );
 		// Completely different API version
 		if ($newVersion [0] > $apiVersion [0]) {
-			$this->dropExpOrb__api100 ( $source, $exp, $motion, $delay );
+			self::dropExpOrb__api100 ( $source, $exp, $motion, $delay );
 		} else {
-			$this->dropExpOrb__api200 ( $source, $exp, $motion, $delay );
+			self::dropExpOrb__api200 ( $source, $exp, $motion, $delay );
 		}
 	}
 	public static function dropExpOrb__api100(Position $source, $exp = 1, Vector3 $motion = \null, $delay = 40) {
