@@ -305,7 +305,7 @@ class EventListener implements Listener {
 				}
 			
 			if ($attribute->getHunger () == 0)
-				if (($player->getHealth () - 1) < 1) {
+				if (($player->getHealth () - 1) > 1) {
 					$ev = new EntityDamageEvent ( $player, EntityDamageEvent::CAUSE_MAGIC, 1 );
 					$player->attack ( $ev->getDamage (), $ev );
 				}
