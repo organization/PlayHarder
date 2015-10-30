@@ -73,11 +73,15 @@ class EventListener implements Listener {
 	public function onPlayerMoveEvent(PlayerMoveEvent $event) {
 		$player = $event->getPlayer ();
 		
-		if($attribute->getCTick () <= 20) { $attribute->setCTick ( $attribute->getCTick () + 1 ); }
-		if($attribute->getCTick () > 20){ $attribute->setCTick ( 0 ); } 
-		
 		if ($player->isSpectator ())
 			return;
+		
+		$attribute = AttributeProvider::getInstance ()->getAttribute ( $player );
+		
+		if ($attribute->getCTick () <= 20)
+			$attribute->setCTick ( $attribute->getCTick () + 1 );
+		if ($attribute->getCTick () > 20)
+			$attribute->setCTick ( 0 );
 		
 		foreach ( $player->getLevel ()->getNearbyEntities ( $player->getBoundingBox ()->grow ( 1, 0.5, 1 ), $player ) as $entity ) {
 			if (! $entity->isAlive ())
@@ -97,22 +101,20 @@ class EventListener implements Listener {
 			
 			$entity->kill ();
 			
-			$attribute = AttributeProvider::getInstance ()->getAttribute ( $player );
 			$attribute->addExp ( $entity->getExp () );
 		}
 		
 		if ($player->isSprinting ()) {
-			if($attribute->getCTick() == 20){
+			if ($attribute->getCTick () == 20) {
 				HungerSystem::exhaustion ( $player, HungerSystem::SPRINTING );
 			}
-			
 		} else if ($player->isSneaking ()) {
-			if($attribute->getCTick() == 20){
+			if ($attribute->getCTick () == 20) {
 				HungerSystem::exhaustion ( $player, HungerSystem::WALKING_AND_SNEAKING );
 			}
 		}
 		if ($player->isInsideOfWater ()) {
-			if($attribute->getCTick() == 20){
+			if ($attribute->getCTick () == 20) {
 				HungerSystem::exhaustion ( $player, HungerSystem::SWIMMING );
 			}
 		}
