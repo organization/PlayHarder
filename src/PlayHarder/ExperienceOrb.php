@@ -3,7 +3,6 @@
 namespace PlayHarder;
 
 use pocketmine\level\format\FullChunk;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\Projectile;
@@ -36,7 +35,7 @@ class ExperienceOrb extends Projectile {
 			self::DATA_NO_AI => [ 
 					self::DATA_TYPE_BYTE,
 					1 ] ];
-	public function __construct(FullChunk $chunk, CompoundTag $nbt, Entity $shootingEntity = \null) {
+	public function __construct(FullChunk $chunk, $nbt, Entity $shootingEntity = \null) {
 		parent::__construct ( $chunk, $nbt, $shootingEntity );
 	}
 	public function onUpdate($currentTick) {
