@@ -46,7 +46,7 @@ class LevelSystem {
 			return;
 		
 		$attribute = AttributeProvider::getInstance ()->getAttribute ( $player );
-		$this->setExp ( $player, $attribute->getExp () - $exp );
+		self::setExp ( $player, $attribute->getExp () - $exp );
 	}
 	public static function setExp(Player $player, $exp) {
 		$attribute = AttributeProvider::getInstance ()->getAttribute ( $player );
