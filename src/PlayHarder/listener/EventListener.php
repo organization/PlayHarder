@@ -133,8 +133,11 @@ class EventListener implements Listener {
 		$attribute->updateAttribute ();
 	}
 	public function onBlockBreakEvent(BlockBreakEvent $event) {
-		if (mt_rand ( 1, 5 ) == 1)
-			ExperienceSystem::dropExpOrb ( $event->getBlock (), $event->getBlock ()->getHardness () * 0.2 );
+		if (mt_rand ( 1, 5 ) == 1) {
+			$exp = $event->getBlock ()->getHardness () * 0.2;
+			$exp = ($exp < 1) ? 1 : $exp;
+			ExperienceSystem::dropExpOrb ( $event->getBlock (), $exp );
+		}
 		HungerSystem::exhaustion ( $event->getPlayer (), HungerSystem::BREAKING_A_BLOCK );
 	}
 	public function onEntityDeathEvent(EntityDeathEvent $event) {
@@ -248,7 +251,7 @@ class EventListener implements Listener {
 							if ($slot->getId () === Item::MUSHROOM_STEW or $slot->getId () === Item::BEETROOT_SOUP) {
 								$player->getInventory ()->addItem ( Item::get ( Item::BOWL, 0, 1 ) );
 							} elseif ($slot->getId () === Item::RAW_FISH and $slot->getDamage () === 3) { // Pufferfish
-								//$player->addEffect ( Effect::getEffect ( Effect::HUNGER )->setAmplifier ( 2 )->setDuration ( 15 * 20 ) );
+							                                                                              // $player->addEffect ( Effect::getEffect ( Effect::HUNGER )->setAmplifier ( 2 )->setDuration ( 15 * 20 ) );
 								$player->addEffect ( Effect::getEffect ( Effect::POISON )->setAmplifier ( 3 )->setDuration ( 60 * 20 ) );
 							}
 						}
@@ -311,6 +314,9 @@ class EventListener implements Listener {
 				}
 		}
 	}
+	// public function testCode(\pocketmine\event\player\PlayerInteractEvent $event) {
+	// ExperienceSystem::dropExpOrb ( $event->getBlock (), 10 );
+	// }
 }
 
 ?>
