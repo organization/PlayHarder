@@ -246,9 +246,9 @@ class EventListener implements Listener {
 							-- $slot->count;
 							$player->getInventory ()->setItemInHand ( $slot, $player );
 							if ($slot->getId () === Item::MUSHROOM_STEW or $slot->getId () === Item::BEETROOT_SOUP) {
-								$this->getInventory ()->addItem ( Item::get ( Item::BOWL, 0, 1 ) );
+								$player->getInventory ()->addItem ( Item::get ( Item::BOWL, 0, 1 ) );
 							} elseif ($slot->getId () === Item::RAW_FISH and $slot->getDamage () === 3) { // Pufferfish
-								$player->addEffect ( Effect::getEffect ( Effect::HUNGER )->setAmplifier ( 2 )->setDuration ( 15 * 20 ) );
+								//$player->addEffect ( Effect::getEffect ( Effect::HUNGER )->setAmplifier ( 2 )->setDuration ( 15 * 20 ) );
 								$player->addEffect ( Effect::getEffect ( Effect::POISON )->setAmplifier ( 3 )->setDuration ( 60 * 20 ) );
 							}
 						}
