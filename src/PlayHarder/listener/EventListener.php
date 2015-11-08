@@ -127,6 +127,7 @@ class EventListener implements Listener {
 		LevelSystem::setExp ( $event->getEntity (), 0 );
 		$attribute = $this->attributeprovider->getAttribute ( $event->getEntity () );
 		$attribute->setHunger ( 20 );
+		$attribute->setMaxHealth( 20 );
 	}
 	public function onPlayerRespawnEvent(PlayerRespawnEvent $event) {
 		$attribute = $this->attributeprovider->getAttribute ( $event->getPlayer () );

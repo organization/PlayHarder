@@ -47,6 +47,7 @@ class HungerSystem {
 				$point = 3;
 				break;
 			case Item::COOKED_CHICKEN :
+			case Item::COOKED_BEEF :
 				$point = 6;
 				break;
 			case Item::COOKED_FISH :
@@ -74,6 +75,7 @@ class HungerSystem {
 				$point = 3;
 				break;
 			case Item::RAW_CHICKEN :
+			case Item::RAW_BEEF :
 				$point = 2;
 				break;
 			case Item::RAW_FISH :
