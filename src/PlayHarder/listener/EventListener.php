@@ -303,7 +303,7 @@ class EventListener implements Listener {
 			$attribute = AttributeProvider::getInstance ()->getAttribute ( $player );
 			
 			if ($player->getMaxHealth () > $player->getHealth ())
-				if ($attribute->getHunger () == 20) {
+				if ($attribute->getHunger () > 10) {
 					$ev = new EntityRegainHealthEvent ( $player, 1, EntityRegainHealthEvent::CAUSE_MAGIC );
 					$player->heal ( 1, $ev );
 				}
