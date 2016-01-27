@@ -228,7 +228,7 @@ class EventListener implements Listener {
 						if (isset ( $items [$slot->getId ()] )) {
 							$this->getServer ()->getPluginManager ()->callEvent ( $ev = new PlayerItemConsumeEvent ( $player, $slot ) );
 							if ($ev->isCancelled ()) {
-								$player->getInventory ()->sendContents ( $this );
+								$player->getInventory ()->sendContents ( $player );
 								break;
 							}
 							
